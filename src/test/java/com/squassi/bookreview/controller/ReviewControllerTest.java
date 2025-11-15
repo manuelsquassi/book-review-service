@@ -45,7 +45,7 @@ public class ReviewControllerTest {
 
         when(reviewService.createReview(any())).thenReturn(entity);
 
-        mockMvc.perform(post("/review")
+        mockMvc.perform(post("/api/reviews")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isAccepted())
@@ -61,7 +61,7 @@ public class ReviewControllerTest {
 
         when(reviewService.createReview(any())).thenThrow(new IllegalArgumentException("Book ID not found on Gutendex API"));
 
-        mockMvc.perform(post("/review")
+        mockMvc.perform(post("/api/reviews")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isBadRequest());
@@ -74,7 +74,7 @@ public class ReviewControllerTest {
         dto.setReview("Good book");
         dto.setScore(15); // Invalid score > 10
 
-        mockMvc.perform(post("/review")
+        mockMvc.perform(post("/api/reviews")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isBadRequest());
@@ -87,7 +87,7 @@ public class ReviewControllerTest {
         dto.setReview("Bad"); // Too short
         dto.setScore(5);
 
-        mockMvc.perform(post("/review")
+        mockMvc.perform(post("/api/reviews")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isBadRequest());
@@ -102,7 +102,7 @@ public class ReviewControllerTest {
 
         when(reviewService.getReview(1L)).thenReturn(Optional.of(entity));
 
-        mockMvc.perform(get("/review/1"))
+        mockMvc.perform(get("/api/reviews/1"))
                 .andExpect(status().isAccepted())
                 .andExpect(content().string("Review still processing"));
     }
@@ -121,7 +121,7 @@ public class ReviewControllerTest {
 
         when(reviewService.getReview(1L)).thenReturn(Optional.of(entity));
 
-        mockMvc.perform(get("/review/1"))
+        mockMvc.perform(get("/api/reviews/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.title").value("Test Book"));
@@ -131,7 +131,7 @@ public class ReviewControllerTest {
     void getNonExistentReviewReturns404() throws Exception {
         when(reviewService.getReview(999L)).thenReturn(Optional.empty());
 
-        mockMvc.perform(get("/review/999"))
+        mockMvc.perform(get("/api/reviews/999"))
                 .andExpect(status().isNotFound());
     }
 
@@ -149,7 +149,7 @@ public class ReviewControllerTest {
 
         when(reviewService.updateReview(eq(1L), any())).thenReturn(entity);
 
-        mockMvc.perform(put("/review/1")
+        mockMvc.perform(put("/api/reviews/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isOk())
@@ -160,7 +160,7 @@ public class ReviewControllerTest {
     void deleteReviewReturns204() throws Exception {
         doNothing().when(reviewService).deleteReview(1L);
 
-        mockMvc.perform(delete("/review/1"))
+        mockMvc.perform(delete("/api/reviews/1"))
                 .andExpect(status().isNoContent());
     }
 }

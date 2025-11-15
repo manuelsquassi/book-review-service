@@ -29,7 +29,7 @@ public class BookControllerTest {
         
         when(gutendexClient.searchBooks("dickens")).thenReturn(mockResponse);
 
-        mockMvc.perform(get("/book/search?q=dickens"))
+        mockMvc.perform(get("/api/books/search?query=dickens"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json"))
                 .andExpect(content().string(mockResponse));
@@ -39,7 +39,7 @@ public class BookControllerTest {
     @SuppressWarnings("null")
     void searchBooksWithEmptyQueryReturnsBadRequest() throws Exception {
         // Empty query should return 400 Bad Request due to validation in controller
-        mockMvc.perform(get("/book/search").param("q", ""))
+        mockMvc.perform(get("/api/books/search").param("query", ""))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string(containsString("error")));
     }

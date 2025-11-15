@@ -15,6 +15,7 @@ import com.squassi.bookreview.exception.ReviewNotFoundException;
 import com.squassi.bookreview.repository.ReviewRepository;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -170,10 +171,50 @@ public class ReviewService {
     }
 
     /**
+     * Retrieves all reviews in the system.
+     *
+     * @return list of all reviews, ordered by creation date descending
+     */
+    @Transactional(readOnly = true)
+    public List<ReviewEntity> getAllReviews() {
+        logger.debug("Retrieving all reviews");
+        
+        List<ReviewEntity> reviews = reviewRepository.findAll();
+        
+        logger.info("Retrieved {} total reviews", reviews.size());
+        
+        return reviews;
+    }
+
+    /**
+     * Retrieves all reviews for a specific book ID.
+     *
+     * @param bookId the Gutendex book ID
+     * @return list of reviews for the book, ordered by creation date descending
+     * @throws IllegalArgumentException if bookId is null or blank
+     */
+    @Transactional(readOnly = true)
+    public List<ReviewEntity> getReviewsByBookId(@NonNull String bookId) {
+        if (bookId == null || bookId.isBlank()) {
+            logger.warn("Attempted to retrieve reviews with null or empty book ID");
+            throw new IllegalArgumentException("Book ID cannot be null or empty");
+        }
+        
+        logger.debug("Retrieving reviews for book ID: {}", bookId);
+        
+        List<ReviewEntity> reviews = reviewRepository.findByBookIdOrderByCreatedAtDesc(bookId);
+        
+        logger.info("Found {} reviews for book ID: {}", reviews.size(), bookId);
+        
+        return reviews;
+    }
+
+    /**
      * Deletes a review by its ID.
      *
      * @param reviewId the ID of the review to delete
      * @throws IllegalArgumentException if reviewId is null
+     * @throws ReviewNotFoundException if review doesn't exist
      */
     public void deleteReview(@NonNull Long reviewId) {
         Objects.requireNonNull(reviewId, "Review ID cannot be null");

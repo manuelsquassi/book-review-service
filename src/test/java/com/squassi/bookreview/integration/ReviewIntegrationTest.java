@@ -49,7 +49,7 @@ public class ReviewIntegrationTest {
         createRequest.setReview("Frankenstein is a masterpiece of gothic literature");
         createRequest.setScore(9);
 
-        String createResponse = mockMvc.perform(post("/review")
+        String createResponse = mockMvc.perform(post("/api/reviews")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(createRequest)))
                 .andExpect(status().isAccepted())
@@ -63,7 +63,7 @@ public class ReviewIntegrationTest {
         Long reviewId = createdReview.getId();
 
         // 2. Read Review (while processing)
-        mockMvc.perform(get("/review/" + reviewId))
+        mockMvc.perform(get("/api/reviews/" + reviewId))
                 .andExpect(status().isAccepted())
                 .andExpect(content().string("Review still processing"));
 
@@ -73,18 +73,18 @@ public class ReviewIntegrationTest {
         updateRequest.setReview("Updated: Frankenstein is an absolute masterpiece");
         updateRequest.setScore(10);
 
-        mockMvc.perform(put("/review/" + reviewId)
+        mockMvc.perform(put("/api/reviews/" + reviewId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updateRequest)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.score").value(10));
 
         // 4. Delete Review
-        mockMvc.perform(delete("/review/" + reviewId))
+        mockMvc.perform(delete("/api/reviews/" + reviewId))
                 .andExpect(status().isNoContent());
 
         // 5. Verify Deletion
-        mockMvc.perform(get("/review/" + reviewId))
+        mockMvc.perform(get("/api/reviews/" + reviewId))
                 .andExpect(status().isNotFound());
     }
 
@@ -95,7 +95,7 @@ public class ReviewIntegrationTest {
         invalidRequest.setReview("Bad"); // Too short
         invalidRequest.setScore(15); // Too high
 
-        mockMvc.perform(post("/review")
+        mockMvc.perform(post("/api/reviews")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(invalidRequest)))
                 .andExpect(status().isBadRequest());
@@ -103,7 +103,7 @@ public class ReviewIntegrationTest {
 
     @Test
     void searchBooks_ReturnsResults() throws Exception {
-        mockMvc.perform(get("/book/search?q=dickens"))
+        mockMvc.perform(get("/api/books/search?query=dickens"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
