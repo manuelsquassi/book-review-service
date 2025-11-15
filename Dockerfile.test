@@ -1,0 +1,14 @@
+# Dockerfile for running tests with Java 21
+FROM eclipse-temurin:21-jdk-alpine
+
+WORKDIR /app
+
+# Install Maven
+RUN apk add --no-cache maven
+
+# Copy project files
+COPY pom.xml .
+COPY src ./src
+
+# Run tests
+CMD ["mvn", "clean", "test"]
