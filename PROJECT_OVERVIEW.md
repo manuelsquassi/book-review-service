@@ -42,6 +42,7 @@ mvn clean test
 
 ### Accesso
 - **API**: http://localhost:8080
+- **Swagger UI**: http://localhost:8080/swagger-ui/index.html
 - **Console H2** (dev): http://localhost:8080/h2-console
 - **Health Check**: http://localhost:8080/actuator/health
 
@@ -49,7 +50,7 @@ mvn clean test
 
 ### 1. Cerca Libri
 ```http
-GET /book/search?q=dickens
+GET /api/books/search?query=dickens
 ```
 Cerca libri usando l'API Gutendex.
 
@@ -69,7 +70,7 @@ Cerca libri usando l'API Gutendex.
 
 ### 2. Crea Recensione
 ```http
-POST /review
+POST /api/reviews
 Content-Type: application/json
 
 {
@@ -81,9 +82,9 @@ Content-Type: application/json
 
 **Risposta:** `202 Accepted` - La recensione viene creata e messa in coda per il processamento asincrono.
 
-### 3. Leggi Recensione
+### 3. Leggi Recensione (Singola)
 ```http
-GET /review/{id}
+GET /api/reviews/{id}
 ```
 
 **Possibili risposte:**
@@ -91,9 +92,28 @@ GET /review/{id}
 - `202 Accepted` - Recensione in elaborazione
 - `404 Not Found` - Recensione non esistente
 
-### 4. Aggiorna Recensione
+### 4. Leggi Tutte le Recensioni
 ```http
-PUT /review/{id}
+GET /api/reviews
+```
+
+**Risposta:** Lista completa di tutte le recensioni nel sistema.
+
+### 5. Leggi Recensioni per Libro
+```http
+GET /api/reviews/book/{bookId}
+```
+
+**Esempio:**
+```bash
+GET /api/reviews/book/84
+```
+
+**Risposta:** Lista di recensioni per il libro specificato (ordinate dalla più recente).
+
+### 6. Aggiorna Recensione
+```http
+PUT /api/reviews/{id}
 Content-Type: application/json
 
 {
@@ -102,9 +122,9 @@ Content-Type: application/json
 }
 ```
 
-### 5. Elimina Recensione
+### 7. Elimina Recensione
 ```http
-DELETE /review/{id}
+DELETE /api/reviews/{id}
 ```
 
 **Risposta:** `204 No Content`
@@ -152,7 +172,7 @@ HikariCP configurato per performance ottimali:
 - Leak detection abilitato
 
 ### 6. **Testing Completo**
-- **28 test** totali (27 passano sempre, 1 richiede API esterna)
+- **28 test** totali, tutti passano ✅
 - Test unitari per controller, service, client
 - Test di integrazione end-to-end
 - Coverage target: 80%+
